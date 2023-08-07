@@ -1,20 +1,9 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import router from './router'
 import App from './App.vue'
+import router from './router'
+import store from './store'
+import './assets/sass/style.scss'
 
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap/dist/js/bootstrap.js'
-import '@/assets/scss/main.scss'
+// import 'vue-select-3/dist/vue-select.css'
 
-import Vue3EasyDataTable from 'vue3-easy-data-table'
-import 'vue3-easy-data-table/dist/style.css'
-
-const app = createApp(App)
-const pinia = createPinia()
-
-app.component('EasyDataTable', Vue3EasyDataTable)
-
-app.use(router)
-app.use(pinia)
-app.mount('#app')
+createApp(App).use(store).use(router).mount('#app')

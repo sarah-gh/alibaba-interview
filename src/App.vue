@@ -1,55 +1,37 @@
 <template>
-  <div class="app" dir="rtl" :data-bs-theme="theme">
-    <button @click="toggleTheme" class="btn">تغییر تم</button>
-    <router-view />
-  </div>
+  <header-page></header-page>
+  <router-view/>
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import headerPage from '@/components/headerPage'
+import { useStore } from 'vuex'
+const { onMounted } = require('vue')
 
 export default {
-  name: 'app',
-
+  components: {
+    headerPage
+  },
   setup () {
-    const themeMap = {
-      light: 'dark',
-      dark: 'light'
-    }
-
-    let tmp
-
-    const theme = ref(
-      localStorage.getItem('theme') ||
-      ((tmp = Object.keys(themeMap)[0]), localStorage.setItem('theme', tmp), tmp)
-    )
-    const bodyClass = document.body.classList
-    bodyClass.add(theme.value)
-
-    function toggleTheme () {
-      const current = localStorage.getItem('theme')
-      const next = themeMap[current]
-
-      bodyClass.replace(current, next)
-      localStorage.setItem('theme', next)
-      theme.value = next
-    }
-
-    watch(theme, (newVal) => {
-      bodyClass.replace(themeMap[newVal], newVal)
+    const store = useStore()
+    onMounted(async () => {
+      await store.dispatch('requestCountries')
     })
-
-    return {
-      theme,
-      toggleTheme,
-      leftDrawerOpen: ref(false)
-    }
   }
 }
 </script>
 
-<style>
-.app {
-  background-color: var(--bs-body-bg);
+<style lang="scss">
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  user-select: none;
+}
+.body {
+    min-width: none !important;
+    max-width: none !important;
 }
 </style>
