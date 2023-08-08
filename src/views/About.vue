@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-deprecated-router-link-tag-prop -->
 <template>
   <div class="back">
     <a @click="$router.go(-1)"><button>back</button></a>
@@ -44,6 +45,7 @@ import axios from 'axios'
 const { onMounted, ref, onUnmounted, watch } = require('vue')
 
 export default {
+  name: 'countryDet',
   setup () {
     const route = useRoute()
     const store = useStore()
@@ -153,13 +155,17 @@ export default {
       flex-wrap: wrap;
       row-gap: 40px;
       text-align: start;
+      .card-text {
+
+      }
       >div {
         width: 50%;
         p{
           margin-bottom: 15px;
+          color: var(--text-secondary);
           .title-item{
             font-weight: bold;
-            color: #000000;
+            color: var(--text-primary);
           }
         }
       }
@@ -173,10 +179,11 @@ export default {
         flex-wrap: wrap;
         button{
           border: 0;
-          background-color: transparent;
+          background-color: var(--bg-primary);
           border-radius: 5px;
           box-shadow: 1px 1px 10px 0px rgb(0 0 0 / 25%);
           padding: 10px 30px;
+          color: var(--text-primary);
           margin: 10px;
         }
       }

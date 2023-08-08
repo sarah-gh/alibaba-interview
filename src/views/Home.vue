@@ -1,9 +1,24 @@
 <template>
   <div class="home" v-if="loading">
     <div class="selection">
-      <div>
-        search: <input type="text" v-model="page.wordSearch" class="search" v-on:keyup="onEnterSearch">
+      <div class="left-elements">
+        <div class="search-container">
+          <div class="search-icon-container">
+            <font-awesome-icon icon="search" class="search-icon"></font-awesome-icon>
+          </div>
+          <!-- <input type="text" v-model="page.wordSearch" class="search-input" v-on:keyup.enter="onEnterSearch"> -->
+          <input type="text" v-model="page.wordSearch" class="search-input" v-on:keyup="onEnterSearch">
+        </div>
+        <div class="buttons">
+          <button type="button" class="btn btn-default" :class="{'active' : isSortByPopulation}" @click="sortByPopulation()">
+            sortByPopulation
+          </button>
+          <button type="button" class="btn btn-default" :class="{'active' : isSortByName}" @click="sortByName()">
+            sortByName
+          </button>
+        </div>
       </div>
+
       <select class v-model="page.selectRegion">
         <option value="all">all</option>
         <template v-for="i in items" :key="i">
@@ -45,7 +60,7 @@ import { useStore } from 'vuex'
 const { onMounted, ref, computed, watch } = require('vue')
 
 export default {
-  name: 'HomePage',
+  name: 'HomePage2',
   components: {
     country,
     VPagination
@@ -55,6 +70,8 @@ export default {
     let info = ref([])
     let myinfo = ref([])
     let loading = ref()
+    let isSortByPopulation = ref(false)
+    let isSortByName = ref(false)
     loading.value = false
     let selectRegion = ''
     let items = [
@@ -81,24 +98,22 @@ export default {
     ]
     const page = ref({
       currentPage: 1,
-      showUpto: 30,
-      showFromTo: 0,
-      pageSize: 30,
+      showUpto: 32,
+      showFromto: 0,
+      pageSize: 32,
       selectRegion: '',
       wordSearch: ''
     })
-
     let totalPage = computed(() => {
       const total = Math.ceil(info.value.length / page.value.pageSize)
       return total
     })
-
     onMounted(() => {
       info.value = [...store.state.countries]
       if (store.state.loading) {
         loading.value = true
       }
-      const list = info.value.slice(page.value.showFromTo, page.value.showUpto)
+      const list = info.value.slice(page.value.showFromto, page.value.showUpto)
       totalPage = Math.ceil(info.value.length / page.value.pageSize)
       myinfo.value = list
     })
@@ -106,7 +121,7 @@ export default {
     // برای دنبال کردن تغییرات اینپوت سلکت برای قاره ها
     watch(() => page.value.selectRegion, async (val) => {
       info.value = [...store.state.countries]
-      const list = info.value.slice(page.value.showFromTo, page.value.showUpto)
+      const list = info.value.slice(page.value.showFromto, page.value.showUpto)
       totalPage = Math.ceil(info.value.length / page.value.pageSize)
       myinfo.value = list
       const i = info.value
@@ -118,7 +133,7 @@ export default {
             totalPage = Math.ceil(info.value.length / page.value.pageSize)
           }
         })
-        const list = info.value.slice(page.value.showFromTo, page.value.showUpto)
+        const list = info.value.slice(page.value.showFromto, page.value.showUpto)
         totalPage = Math.ceil(info.value.length / page.value.pageSize)
         myinfo.value = list
       }
@@ -127,7 +142,7 @@ export default {
     // برای تغییرات اطلاعات کشورها در استور
     watch(() => store.state.countries, function () {
       info.value = [...store.state.countries]
-      const list = info.value.slice(page.value.showFromTo, page.value.showUpto)
+      const list = info.value.slice(page.value.showFromto, page.value.showUpto)
       myinfo.value = list
     })
 
@@ -135,31 +150,98 @@ export default {
       loading.value = true
     })
 
+    // تابع مرتب‌سازی کشورها بر اساس جمعیت (بزرگتر به کوچکتر)
+    function sortByPopulation () {
+      isSortByPopulation.value = true
+      isSortByName.value = false
+      info.value.sort((a, b) => b.population - a.population)
+      const list = info.value.slice(page.value.showFromto, page.value.showUpto)
+      myinfo.value = list
+    }
+
+    // تابع مرتب‌سازی کشورها بر اساس نام کشور
+    function sortByName () {
+      isSortByName.value = true
+      isSortByPopulation.value = false
+      info.value.sort((a, b) => a.name.localeCompare(b.name))
+      const list = info.value.slice(page.value.showFromto, page.value.showUpto)
+      myinfo.value = list
+    }
+
     // سرچ
     async function onEnterSearch () {
+      page.value.selectRegion = 'all'
+      isSortByName.value = false
+      isSortByPopulation.value = false
       updateHandler(1)
       const i = [...store.state.countries]
-      info.value = i.filter(item => item.name.toLowerCase().includes(page.value.wordSearch.toLowerCase()))
-      const list = info.value.slice(page.value.showFromTo, page.value.showUpto)
+      const searchStr = page.value.wordSearch.toLowerCase()
+      const searchStrWithoutVowel = searchStr.replace(/a|i|o|e|u/g, '')
+
+      // جستجو با استفاده از کلمه دقیق
+      const exactMatches = i.filter(item => item.name.toLowerCase().includes(searchStr))
+
+      // جستجو با حذف حروف صدادار
+      const filteredMatches = i.filter(item => {
+        const itemNameWithoutVowel = item.name.toLowerCase().replace(/a|i|o|e|u/g, '')
+        return itemNameWithoutVowel.includes(searchStrWithoutVowel) && searchStrWithoutVowel.length > 1
+      })
+
+      // حذف تکراری‌ها و ادغام نتایج
+      const combinedMatches = [...new Set([...exactMatches, ...filteredMatches])]
+
+      info.value = combinedMatches
+      const list = info.value.slice(page.value.showFromto, page.value.showUpto)
       totalPage = Math.ceil(info.value.length / page.value.pageSize)
       myinfo.value = list
     }
 
+    // async function onEnterSearch () {
+    //   isSortByName.value = false
+    //   isSortByPopulation.value = false
+    //   updateHandler(1)
+    //   const i = [...store.state.countries]
+    //   const searchStr = page.value.wordSearch.toLowerCase()
+    //   const searchStrWithoutVowel = searchStr.replace(/a|i|o|e|u/g, '')
+
+    //   const matches = i.filter(item => {
+    //     const itemNameWithoutVowel = item.name.toLowerCase().replace(/a|i|o|e|u/g, '')
+    //     return (
+    //       item.name.toLowerCase().includes(searchStr) ||
+    //   (itemNameWithoutVowel.includes(searchStrWithoutVowel) && searchStrWithoutVowel.length > 1)
+    //     )
+    //   })
+
+    //   if (page.value.selectRegion !== 'all') {
+    //     myinfo.value = matches.filter(item => item.region === page.value.selectRegion)
+    //   } else {
+    //     myinfo.value = matches
+    //   }
+
+    //   totalPage = Math.ceil(myinfo.value.length / page.value.pageSize)
+    //   const list = myinfo.value.slice(page.value.showFromto, page.value.showUpto)
+    //   myinfo.value = list
+    // }
+
     // تغییر صفحات
+
     function updateHandler (e) {
       page.value.currentPage = e
-      page.value.showFromTo = ((page.value.currentPage - 1) * page.value.pageSize)
+      page.value.showFromto = ((page.value.currentPage - 1) * page.value.pageSize)
       page.value.showUpto = (page.value.currentPage * page.value.pageSize)
-      myinfo.value = info.value.slice(page.value.showFromTo, page.value.showUpto)
+      myinfo.value = info.value.slice(page.value.showFromto, page.value.showUpto)
     }
-
     return {
       info,
       myinfo,
       updateHandler,
       onEnterSearch,
-      page,
+      sortByName,
+      sortByPopulation,
+      isSortByPopulation,
+      isSortByName,
       loading,
+      page,
       items,
       selectRegion,
       totalPage
@@ -175,16 +257,30 @@ export default {
   padding: 70px;
   gap: 50px;
   justify-content: space-between;
-
-  .card:nth-last-child(-n+2) {
-    margin-right: 0;
-  }
 }
 
 .selection {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   padding: 0 70px;
+
+  select {
+    height: 50px;
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    border-radius: 5px;
+    min-width: 200px;
+    width: 20%;
+    option {
+      font-size: 14px;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+  }
 }
 
 .loading {
@@ -304,4 +400,117 @@ export default {
   .pagination {
     margin: 0 auto;
   }
-}</style>
+}
+
+.left-elements {
+  display: flex;
+  width: 70%;
+  flex-wrap: wrap;
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    height: 50px;
+    font-size: 16px;
+    margin: 0 0 0 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &.active {
+      box-shadow: 1px 1px 2px 0 var(--text-secondary);
+    }
+  }
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: var(--bg-primary);
+  max-width: 300px;
+  width: 40%;
+
+  input {
+    background-color: transparent;
+    font-size: 16px;
+    // max-width: 200px;
+    // width: 40%;
+  }
+}
+
+.search-icon-container {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.search-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 8px;
+}
+
+@media only screen and (max-width: 768px) {
+  .cards {
+    justify-content: center;
+    padding: 30px;
+  }
+  .selection {
+    padding: 30px;
+  }
+}
+@media only screen and (max-width: 425px) {
+  .cards {
+    padding: 16px;
+  }
+  .selection {
+    padding: 16px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .selection {
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    .left-elements {
+      flex-direction: column;
+      width: 100%;
+      margin-top: 10px;
+      .buttons {
+        width: 100%;
+        gap: 10px;
+        margin-top: 10px;
+        .btn {
+          margin: 0;
+          flex-grow: 1;
+        }
+      }
+      .search-container {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 1000px;
+      }
+    }
+    select {
+      width: 100%;
+      max-width: 1000px;
+      margin-top: 10px;
+    }
+  }
+}
+</style>
