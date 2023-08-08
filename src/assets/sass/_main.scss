@@ -184,3 +184,7 @@ body {
     /* استفاده از متغیر رنگ پس زمینه */
     color: var(--text-primary) !important;
 }
+
+button {
+    cursor: pointer;
+}

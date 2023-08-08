@@ -34,7 +34,7 @@
         </div>
         <div class="borders" v-if="borders">
           <div class="card-text"><span class="title-item">borders: </span>
-            <router-link :to="'./about/' + lan.name" v-for="lan in borders" :key="lan" class="card" :tag="'div'">
+            <router-link :to="'./' + lan.name" v-for="lan in borders" :key="lan" class="card" :tag="'div'">
               <button>{{ lan.name }} </button>
             </router-link>
           </div>
