@@ -1,39 +1,58 @@
 <!-- eslint-disable vue/no-deprecated-router-link-tag-prop -->
 <template>
   <div class="back">
-    <a @click="$router.go(-1)"><button>back</button></a>
+    <a @click="$router.go(-1)">
+      <button>
+        <font-awesome-icon icon="arrow-left" class="search-icon"></font-awesome-icon>
+          back
+      </button>
+    </a>
   </div>
   <div class="about" v-if="info[0]">
-    <img class="img" :style="{width: imgWidth+'px', height: imgHeight+'px'}" :src="info[0].flags?.svg" alt="Card image cap">
+    <img class="img" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }" :src="info[0].flags?.svg"
+      alt="Card image cap">
+    <!-- <div class="image-container">
+      <img class="img" :src="info[0].flags?.svg" alt="Card image cap">
+    </div> -->
     <div class="body">
       <div class="content">
-        <h1 class="card-title">{{info[0].name}}</h1>
+        <h1 class="card-title">{{ info[0].name }}</h1>
         <div>
-          <p class="card-text"><span class="title-item">Population: </span>{{info[0].population}}</p>
-          <p class="card-text"><span class="title-item">Region: </span>{{info[0].region}}</p>
-          <p class="card-text"><span class="title-item">Capital: </span>{{info[0].capital}}</p>
-          <p class="card-text"><span class="title-item">nativeName: </span>{{info[0].nativeName}}</p>
-          <p class="card-text"><span class="title-item">subregion: </span>{{info[0].subregion}}</p>
+          <p class="card-text"><span class="title-item">Population: </span>{{ info[0].population }}</p>
+          <p class="card-text"><span class="title-item">Region: </span>{{ info[0].region }}</p>
+          <p class="card-text"><span class="title-item">Capital: </span>{{ info[0].capital }}</p>
+          <p class="card-text"><span class="title-item">nativeName: </span>{{ info[0].nativeName }}</p>
+          <p class="card-text"><span class="title-item">subregion: </span>{{ info[0].subregion }}</p>
         </div>
         <div>
-          <p class="card-text"><span class="title-item">topLevelDomain: </span>{{info[0].topLevelDomain[0]}}</p>
-          <p class="card-text" v-if="info[0].currencies"><span class="title-item">currencies: </span>{{info[0].currencies[0].name}}</p>
+          <p class="card-text"><span class="title-item">topLevelDomain: </span>{{ info[0].topLevelDomain[0] }}</p>
+          <p class="card-text" v-if="info[0].currencies"><span class="title-item">currencies:
+            </span>{{ info[0].currencies[0].name }}</p>
           <p class="card-text"><span class="title-item">languages: </span>
-            <span v-for="lan in info[0].languages" :key="lan">{{lan.name}}</span>
+            <span v-for="lan in info[0].languages" :key="lan">{{ lan.name }}</span>
           </p>
         </div>
         <div class="borders" v-if="borders">
           <div class="card-text"><span class="title-item">borders: </span>
-          <router-link :to="'./about/'+lan.name" v-for="lan in borders" :key="lan"  class="card" :tag="'div'">
-            <button>{{lan.name}} </button>
-          </router-link>
+            <router-link :to="'./about/' + lan.name" v-for="lan in borders" :key="lan" class="card" :tag="'div'">
+              <button>{{ lan.name }} </button>
+            </router-link>
           </div>
         </div>
       </div>
     </div>
   </div>
   <div class="home loading" v-else>
-    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="lds-roller">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
   </div>
 </template>
 
@@ -56,8 +75,16 @@ export default {
     let imgHeight = ref([])
 
     function myEventHandler () {
+      console.log(window.innerWidth)
       imgWidth.value = (window.innerWidth / 8) * 3
       imgHeight.value = (imgWidth.value * 3) / 5
+      if (window.innerWidth > 1024) {
+        imgWidth.value = (window.innerWidth / 8) * 3
+        imgHeight.value = (imgWidth.value * 3) / 5
+      } else {
+        imgWidth.value = window.innerWidth - 32
+        imgHeight.value = (imgWidth.value * 3) / 5
+      }
     }
     async function changeData () {
       window.addEventListener('resize', myEventHandler)
@@ -128,56 +155,79 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.back{
-  padding: 20px 100px;
+.back {
+  padding: 20px 70px 40px 70px;
   display: flex;
-  button{
-     width: 100px;
-     height: 50px;
-     border-radius: 7px;
-     border: 1px solid #ccc
+  a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+  button {
+    width: 100px;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 3px 0 #ccc;
+    font-size: 1.2rem;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    svg {
+      margin-right: 8px;
+    }
   }
 }
-.about{
-  padding: 100px;
+
+.about {
+  padding: 10px 70px;
   margin: 0 auto;
   display: flex;
-  gap: 150px;
+  gap: 10%;
   justify-content: space-between;
-  .body{
+  box-sizing: border-box;
+
+  .body {
     height: 500px;
     display: flex;
     width: 65%;
     align-items: center;
     justify-content: center;
-    .content{
+
+    .content {
       display: flex;
       flex-wrap: wrap;
       row-gap: 40px;
       text-align: start;
-      .card-text {
 
-      }
+      .card-text {}
+
       >div {
         width: 50%;
-        p{
+
+        p {
           margin-bottom: 15px;
           color: var(--text-secondary);
-          .title-item{
+          font-size: 16px;
+
+          .title-item {
             font-weight: bold;
+            font-size: 14px;
             color: var(--text-primary);
           }
         }
       }
-      h1{
+
+      h1 {
         width: 100%;
       }
-      .borders{
+
+      .borders {
         margin-top: 20px;
         width: 100%;
         display: flex;
         flex-wrap: wrap;
-        button{
+
+        button {
           border: 0;
           background-color: var(--bg-primary);
           border-radius: 5px;
@@ -185,6 +235,36 @@ export default {
           padding: 10px 30px;
           color: var(--text-primary);
           margin: 10px;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .back {
+    padding: 10px 16px;
+  }
+  .about {
+    flex-direction: column;
+    padding: 10px 16px;
+    gap: 0px;
+
+    .body {
+      height: fit-content;
+      padding: 40px 0 40px 0;
+
+      .content {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 20px;
+        text-align: start;
+
+        .card-text {}
+
+        >div {
+          width: 100%;
+
         }
       }
     }

@@ -91,4 +91,12 @@ export default {
   cursor: pointer;
 }
 
+@media only screen and (max-width: 768px) {
+  .header {
+    padding: 16px;
+    h1 a {
+      font-size: 1.5rem;
+    }
+  }
+}
 </style>
