@@ -9,11 +9,23 @@
     </a>
   </div>
   <div class="about" v-if="info[0]">
-    <img class="img" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }" :src="info[0].flags?.svg"
-      alt="Card image cap">
-    <!-- <div class="image-container">
-      <img class="img" :src="info[0].flags?.svg" alt="Card image cap">
-    </div> -->
+
+    <div class="svg-container" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }">
+        <inline-svg
+            :src="info[0].flags?.svg"
+        ></inline-svg>
+    </div>
+    <!-- این دوتا هم میشه فقط نیاز به یه تغییر کوچیک تو استایل دارن -->
+    <!-- 1 -->
+    <!-- <inline-svg
+        :src="info[0].flags?.svg"
+        :width="imgWidth"
+        :height="imgHeight"
+        aria-label="My image"
+    ></inline-svg> -->
+    <!-- 2 -->
+    <!-- <img class="img" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }" :src="info[0].flags?.svg"
+      alt="Card image cap"> -->
     <div class="body">
       <div class="content">
         <h1 class="card-title">{{ info[0].name }}</h1>
@@ -185,7 +197,14 @@ export default {
   gap: 10%;
   justify-content: space-between;
   box-sizing: border-box;
-
+  .svg-container {
+    overflow: hidden;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .body {
     height: 500px;
     display: flex;
