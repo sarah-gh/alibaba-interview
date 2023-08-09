@@ -88,13 +88,13 @@ export default {
     function myEventHandler () {
       console.log(window.innerWidth)
       imgWidth.value = (window.innerWidth / 8) * 3
-      imgHeight.value = (imgWidth.value * 3) / 5
+      imgHeight.value = (imgWidth.value * 3) / 4
       if (window.innerWidth > 1024) {
         imgWidth.value = (window.innerWidth / 8) * 3
-        imgHeight.value = (imgWidth.value * 3) / 5
+        imgHeight.value = (imgWidth.value * 3) / 4
       } else {
         imgWidth.value = window.innerWidth - 32
-        imgHeight.value = (imgWidth.value * 3) / 5
+        imgHeight.value = (imgWidth.value * 3) / 4
       }
     }
     async function changeData () {
