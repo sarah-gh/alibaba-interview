@@ -9,12 +9,8 @@
     </a>
   </div>
   <div class="about" v-if="info[0]">
-
-    <div class="svg-container" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }">
-        <inline-svg
-            :src="info[0].flags?.svg"
-        ></inline-svg>
-    </div>
+    <img class="img" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }" :src="info[0].flags?.svg"
+      alt="Card image cap">
     <!-- این دوتا هم میشه فقط نیاز به یه تغییر کوچیک تو استایل دارن -->
     <!-- 1 -->
     <!-- <inline-svg
@@ -24,8 +20,11 @@
         aria-label="My image"
     ></inline-svg> -->
     <!-- 2 -->
-    <!-- <img class="img" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }" :src="info[0].flags?.svg"
-      alt="Card image cap"> -->
+    <!-- <div class="svg-container" :style="{ width: imgWidth + 'px', height: imgHeight + 'px' }">
+        <inline-svg
+            :src="info[0].flags?.svg"
+        ></inline-svg>
+    </div> -->
     <div class="body">
       <div class="content">
         <h1 class="card-title">{{ info[0].name }}</h1>
